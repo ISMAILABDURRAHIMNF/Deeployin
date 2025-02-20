@@ -1,0 +1,9 @@
+[submodule "Deeployin-ui"]
+	path = Deeployin-ui
+	url = https://github.com/ISMAILABDURRAHIMNF/Deeployin-ui.git
+[submodule "Dockerfile-Generator"]
+	path = Dockerfile-Generator
+	url = https://github.com/ISMAILABDURRAHIMNF/Dockerfile-Generator.git
+[submodule "Docker-Deploy-Automation"]
+	path = Docker-Deploy-Automation
+	url = https://github.com/ISMAILABDURRAHIMNF/Docker-Deploy-Automation.git
