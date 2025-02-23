@@ -1,49 +1,68 @@
-version: '3.8'
-
 services:
   frontend:
     build: ./Deeployin-ui
     ports:
       - "80:80"
     environment:
-      - VITE_API_BACKEND1=http://localhost:5001
-      - VITE_API_BACKEND2=http://localhost:5002
+      - VITE_API_BACKEND1=http://backend1:5000
+      - VITE_API_BACKEND2=http://backend2:5000
     restart: always
+    networks:
+      - deeployin-network
+    depends_on:
+      - backend1
+      - backend2
+
 
   backend1:
     build: ./Dockerfile-Generator
-    ports:
-      - "5001:5000"
     environment:
       - OPENAI_API_KEY=
-      - SECRET_KEY=
-      - DEPLOY_PATH=
+      - SECRET_KEY=secret
+      - DEPLOY_PATH=/app/folder_deploy
+    volumes:
+      - /path/folder_deploy:/app/folder_deploy
     depends_on:
       - db
     restart: always
+    networks:
+      - deeployin-network
 
   backend2:
     build: ./Docker-Deploy-Automation
-    ports:
-      - "5002:5000"
     environment:
       - DB_HOST=db
       - DB_NAME=docker
-      - DB_USER=root
+      - DB_USER=user
       - DB_PASS=password
-      - SECRET_KEY=
-      - DEPLOY_PATH=
+      - SECRET_KEY=secret
+      - DEPLOY_PATH=/app/folder_deploy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /path/folder_deploy:/app/folder_deploy
     depends_on:
       - db
     restart: always
+    networks:
+      - deeployin-network
 
   db:
-    image: mysql:8
+    image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mydb
+      MYSQL_DATABASE: docker
       MYSQL_USER: user
       MYSQL_PASSWORD: password
-    ports:
-      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
     restart: always
+    networks:
+      - deeployin-network
+
+networks:
+  deeployin-network:
+    driver: bridge
+
+volumes:
+  mysql_data: 
